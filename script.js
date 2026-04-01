@@ -2,14 +2,24 @@ async function getQuote() {
   try {
     const res = await fetch('https://www.positive-api.online/phrase/esp');
     const data = await res.json();
-    document.getElementById('message').innerText = data.phrase;
+    animateText(data.phrase);
   } catch (e) {
-    document.getElementById('message').innerText = "Recuerda por qué empezaste.";
+    animateText("Recuerda por qué empezaste.");
   }
 }
 
-// Detectar movimiento
+function animateText(text) {
+  const el = document.getElementById('message');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.innerText = text;
+    el.style.opacity = 1;
+  }, 200);
+}
+
+// Detectar movimiento + vibración
 let lastX = null, lastY = null, lastZ = null;
+
 window.addEventListener('devicemotion', function(event) {
   let acc = event.accelerationIncludingGravity;
 
@@ -26,11 +36,10 @@ window.addEventListener('devicemotion', function(event) {
 
   if (deltaX + deltaY + deltaZ > 30) {
     getQuote();
-}
+    if (navigator.vibrate) navigator.vibrate(100);
+  }
 
   lastX = acc.x;
   lastY = acc.y;
   lastZ = acc.z;
 });
-
-
